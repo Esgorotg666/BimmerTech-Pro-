@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BimmerTech Pro - Fault Code Lookup</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--n9:#020b18;--n8:#071428;--n7:#0b1f3a;--bl:#1a6bff;--blb:#3d8bff;--blg:#1a6bff33;--sv:#c8d8e8;--wh:#eef4fb;--dm:#5d7d99;--gd:#d4a843;--gn:#00c87a;--or:#e07820;--rd:#e03030;--br:#1a3a5c;--brb:#1a6bff55}
+html,body{min-height:100%;background:var(--n9);color:var(--sv);font-family:Barlow,sans-serif}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--bl),var(--gd),var(--bl),transparent);z-index:100}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:64px;background:#071428ee;backdrop-filter:blur(12px);border-bottom:1px solid var(--br);position:sticky;top:0;z-index:50}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.rl{width:36px;height:36px;border-radius:50%;border:2px solid var(--bl);background:conic-gradient(#0a0a0a 90deg,#fff 90deg 180deg,#0a0a0a 180deg 270deg,#fff 270deg);position:relative;box-shadow:0 0 10px var(--blg)}
+.rl::after{content:"";position:absolute;inset:4px;border-radius:50%;background:conic-gradient(#0055cc 90deg,#fff 90deg 180deg,#0055cc 180deg 270deg,#fff 270deg)}
+.lm{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:18px;letter-spacing:.12em;text-transform:uppercase;color:var(--wh)}
+.ls{font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:.22em;color:var(--blb);text-transform:uppercase}
+.gnav{display:flex;align-items:center;gap:3px;background:var(--n8);border:1px solid var(--br);border-radius:5px;padding:4px}
+.gnav a{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:3px;text-decoration:none;font-family:"Barlow Condensed",sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dm);transition:all .2s;border:1px solid transparent;white-space:nowrap}
+.gnav a:hover{color:var(--sv);background:var(--n7)}
+.gnav a.act{color:var(--blb);background:var(--blg);border-color:var(--brb)}
+.gd{width:1px;height:18px;background:var(--br);margin:0 2px}
+.gbadge{display:inline-block;padding:1px 5px;border-radius:2px;background:var(--gd);color:var(--n9);font-family:"Share Tech Mono",monospace;font-size:8px;font-weight:700;margin-left:2px;vertical-align:middle}
+.lchip{display:flex;align-items:center;gap:5px;font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--gn)}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+main{max-width:1100px;margin:0 auto;padding:28px 28px 60px}
+.hero{background:linear-gradient(135deg,var(--n7),var(--n8));border:1px solid var(--brb);border-radius:10px;padding:26px 30px;margin-bottom:22px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--gd),var(--bl))}
+.hwm{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:"Barlow Condensed",sans-serif;font-size:90px;font-weight:800;color:#ffffff04;pointer-events:none;user-select:none}
+.hey{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.3em;color:var(--bl);text-transform:uppercase;margin-bottom:5px}
+.htitle{font-family:"Barlow Condensed",sans-serif;font-size:36px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wh);line-height:1;margin-bottom:5px}
+.hsub{font-family:"Share Tech Mono",monospace;font-size:11px;color:#8ab4cc}
+.searchbox{display:flex;align-items:center;background:var(--n8);border:2px solid var(--brb);border-radius:8px;overflow:hidden;margin-bottom:12px;transition:border-color .2s}
+.searchbox:focus-within{border-color:var(--bl)}
+.sico{padding:0 18px;font-size:18px;color:var(--dm)}
+.sinput{flex:1;background:transparent;border:none;outline:none;color:var(--wh);font-family:"Share Tech Mono",monospace;font-size:17px;letter-spacing:.08em;padding:16px 0;text-transform:uppercase}
+.sinput::placeholder{color:var(--dm);font-size:13px;text-transform:none;letter-spacing:.02em}
+.sbtn{padding:16px 24px;background:linear-gradient(135deg,#1255cc,var(--bl));border:none;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.sbtn:hover{background:var(--blb)}
+.qrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.qlbl{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--dm);text-transform:uppercase}
+.qbtn{padding:5px 12px;background:var(--n8);border:1px solid var(--br);border-radius:3px;font-family:"Share Tech Mono",monospace;font-size:11px;color:#8ab4cc;cursor:pointer;transition:all .15s}
+.qbtn:hover{border-color:var(--bl);color:var(--blb);background:var(--blg)}
+.rcard{background:var(--n8);border:1px solid var(--brb);border-radius:10px;overflow:hidden;margin-bottom:16px;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.rtop{padding:20px 24px 16px;border-bottom:1px solid var(--br);position:relative;padding-left:28px}
+.raccent{position:absolute;left:0;top:0;bottom:0;width:5px}
+.crow{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.rcode{font-family:"Share Tech Mono",monospace;font-size:26px;font-weight:700;letter-spacing:.1em;color:var(--wh)}
+.sev{padding:4px 11px;border-radius:3px;font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+.sc{background:#e0303018;border:1px solid #e0303055;color:var(--rd)}
+.sh{background:#e0782018;border:1px solid #e0782055;color:var(--or)}
+.sm{background:#d4a84318;border:1px solid #d4a84355;color:var(--gd)}
+.sl2{background:#00c87a18;border:1px solid #00c87a55;color:var(--gn)}
+.rsys{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--dm);text-transform:uppercase}
+.rtitle{font-family:"Barlow Condensed",sans-serif;font-size:21px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--wh);margin-bottom:5px}
+.rdesc{font-size:13px;color:var(--sv);line-height:1.6}
+.rbody{display:grid;grid-template-columns:1fr 1fr}
+.rcol{padding:18px 22px}
+.rcol:first-child{border-right:1px solid var(--br)}
+.rct{font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--dm);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.rct::after{content:"";flex:1;height:1px;background:var(--br)}
+.clist,.flist{display:flex;flex-direction:column;gap:6px}
+.ci{display:flex;gap:9px;padding:8px 11px;background:var(--n9);border-radius:4px;border-left:3px solid var(--or);font-size:12px;color:var(--sv);line-height:1.5}
+.fi{display:flex;gap:9px;padding:8px 11px;background:var(--n9);border-radius:4px;border-left:3px solid var(--gn);font-size:12px;color:var(--sv);line-height:1.5}
+.inum{font-family:"Share Tech Mono",monospace;font-size:9px;color:var(--dm);flex-shrink:0;margin-top:2px;min-width:14px}
+.rfooter{padding:12px 22px;border-top:1px solid var(--br);background:#ffffff02;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rtag{font-family:"Share Tech Mono",monospace;font-size:10px;padding:3px 8px;border-radius:2px;background:var(--n9);border:1px solid var(--br);color:var(--dm);text-transform:uppercase}
+.rlabor{margin-left:auto;font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:700;color:var(--gd)}
+.nofound{text-align:center;padding:50px 30px;background:var(--n8);border:1px dashed var(--br);border-radius:8px}
+.nfi{font-size:42px;margin-bottom:12px;opacity:.4}
+.nft{font-family:"Barlow Condensed",sans-serif;font-size:20px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dm)}
+.nfs{font-size:13px;color:var(--dm);margin-top:8px;line-height:1.6}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.cgcard{background:var(--n8);border:1px solid var(--br);border-radius:8px;padding:20px;cursor:pointer;transition:all .2s}
+.cgcard:hover{border-color:var(--bl);transform:translateY(-2px);box-shadow:0 6px 20px #00000044}
+.cgicon{font-size:26px;margin-bottom:8px}
+.cgname{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--wh);margin-bottom:3px}
+.cgcount{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dm)}
+.cgcodes{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.cgchip{font-family:"Share Tech Mono",monospace;font-size:9px;padding:2px 6px;background:var(--n9);border:1px solid var(--br);border-radius:2px;color:var(--dm)}
+@media(max-width:768px){main{padding:16px 14px 40px}header{padding:0 14px}.gnav a span:not(.gbadge){display:none}.rbody{grid-template-columns:1fr}.rcol:first-child{border-right:none;border-bottom:1px solid var(--br)}.catgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo">
+    <div class="rl"></div>
+    <div><div class="lm">BimmerTech Pro</div><div class="ls">Diagnostic &amp; Repair Platform</div></div>
+  </a>
+  <div style="display:flex;align-items:center;gap:8px;background:var(--n7);border:1px solid var(--br);border-radius:4px;padding:7px 14px">
+    <span class="ls">Vehicle:</span>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--wh);text-transform:uppercase">2022 BMW 340i &nbsp;|&nbsp; 3.0L I6 B58</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="lchip"><div class="ldot"></div>Live</div>
+    <nav class="gnav">
+      <a href="index.html"><span>&#128663;</span> Vehicle</a>
+      <div class="gd"></div>
+      <a href="labor-guide.html"><span>&#128203;</span> Labor</a>
+      <div class="gd"></div>
+      <a href="fault-codes.html" class="act"><span>&#9889;</span> Fault Codes</a>
+      <div class="gd"></div>
+      <a href="dashboard.html"><span>&#128273;</span> Dashboard <span class="gbadge">SOON</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hwm">DTC</div>
+    <div class="hey">BMW Fault Code Database</div>
+    <div class="htitle">&#9889; Fault Code Lookup</div>
+    <div class="hsub">&#9651; P0100-P0200 &mdash; Air/Fuel Metering codes with causes, fixes &amp; part numbers</div>
+  </div>
+
+  <div class="searchbox">
+    <span class="sico">&#128269;</span>
+    <input class="sinput" id="sinput" type="text" placeholder="Type a code e.g. P0171, P0101, P0128 and press Search...">
+    <button class="sbtn" onclick="doSearch()">Search</button>
+  </div>
+  <div class="qrow">
+    <span class="qlbl">Quick:</span>
+    <button class="qbtn" onclick="qs('P0100')">P0100</button>
+    <button class="qbtn" onclick="qs('P0101')">P0101</button>
+    <button class="qbtn" onclick="qs('P0102')">P0102</button>
+    <button class="qbtn" onclick="qs('P0128')">P0128</button>
+    <button class="qbtn" onclick="qs('P0171')">P0171</button>
+    <button class="qbtn" onclick="qs('P0172')">P0172</button>
+    <button class="qbtn" onclick="qs('P0174')">P0174</button>
+    <button class="qbtn" onclick="qs('P0175')">P0175</button>
+    <button class="qbtn" onclick="qs('P0191')">P0191</button>
+  </div>
+
+  
+  <div id="catgrid" class="catgrid">
+    <div class="cgcard" onclick="qs('P0100')">
+      <div class="cgicon">&#127968;</div>
+      <div class="cgname">Mass Airflow (MAF)</div>
+      <div class="cgcount">4 codes</div>
+      <div class="cgcodes"><span class="cgchip">P0100</span><span class="cgchip">P0101</span><span class="cgchip">P0102</span><span class="cgchip">P0103</span></div>
+    </div>
+    <div class="cgcard" onclick="qs('P0112')">
+      <div class="cgicon">&#127777;&#65039;</div>
+      <div class="cgname">Intake Air Temp</div>
+      <div class="cgcount">2 codes</div>
+      <div class="cgcodes"><span class="cgchip">P0112</span><span class="cgchip">P0113</span></div>
+    </div>
+    <div class="cgcard" onclick="qs('P0128')">
+      <div class="cgicon">&#9831;</div>
+      <div class="cgname">Coolant Temp</div>
+      <div class="cgcount">1 code</div>
+      <div class="cgcodes"><span class="cgchip">P0128</span></div>
+    </div>
+    <div class="cgcard" onclick="qs('P0171')">
+      <div class="cgicon">&#9651;</div>
+      <div class="cgname">Fuel Trim (Lean)</div>
+      <div class="cgcount">2 codes</div>
+      <div class="cgcodes"><span class="cgchip">P0171</span><span class="cgchip">P0174</span></div>
+    </div>
+    <div class="cgcard" onclick="qs('P0172')">
+      <div class="cgicon">&#9660;</div>
+      <div class="cgname">Fuel Trim (Rich)</div>
+      <div class="cgcount">2 codes</div>
+      <div class="cgcodes"><span class="cgchip">P0172</span><span class="cgchip">P0175</span></div>
+    </div>
+    <div class="cgcard" onclick="qs('P0191')">
+      <div class="cgicon">&#9981;</div>
+      <div class="cgname">Fuel Pressure</div>
+      <div class="cgcount">1 code</div>
+      <div class="cgcodes"><span class="cgchip">P0191</span></div>
+    </div>
+  </div>
+<div id="results"></div>
+</main>
+
+<script>
+var DB = [
+  {
+    code:"P0100", sev:"sh", sevtxt:"HIGH", system:"Mass Airflow",
+    color:"#e07820",
+    title:"Mass Air Flow Circuit Malfunction",
+    desc:"The ECM has detected a fault in the Mass Air Flow (MAF) sensor circuit. The signal from the MAF sensor is out of expected range. This can cause rough idle, poor acceleration, and increased fuel consumption on BMW B-series engines.",
+    causes:["MAF sensor connector loose, corroded or damaged","Faulty MAF sensor (internal failure)","Air leak between MAF sensor and throttle body","Wiring harness damage or short to ground","Contaminated MAF sensor from oil catch can blowby"],
+    fixes:["Inspect MAF sensor connector and pins for corrosion or damage","Check intake boot between airbox and throttle body for cracks or leaks","Clean MAF sensor with dedicated MAF cleaner spray — do not touch the hot wire","Measure MAF sensor voltage at idle (should be 0.8-1.0V) and at WOT (4.5-5V)","If voltage is out of range replace MAF sensor","Clear code and road test — verify with live data in ISTA"],
+    tags:["MAF","Airflow","Circuit Fault"],
+    labor:"0.5 - 1.5 hrs",
+    parts:["MAF Sensor: 13627551638","Intake Boot: 13717524898"]
+  },
+  {
+    code:"P0101", sev:"sh", sevtxt:"HIGH", system:"Mass Airflow",
+    color:"#e07820",
+    title:"Mass Air Flow Sensor Range / Performance",
+    desc:"The MAF sensor signal is within the circuit operating range but the readings do not match expected values for current engine load and RPM. This is a performance/rationality fault rather than a circuit failure.",
+    causes:["Dirty or contaminated MAF sensor hot wire element","Air filter clogged restricting airflow","Air leak downstream of MAF sensor (unmetered air entering engine)","Intake boot crack allowing false air in","MAF sensor partially failing — reads low or inconsistently"],
+    fixes:["Remove and inspect air filter — replace if dirty","Clean MAF sensor hot wire with MAF cleaner, allow to fully dry before reinstalling","Smoke test intake system from MAF to throttle body to find air leaks","Inspect all intake clamps and couplers for looseness","Compare MAF g/s reading in ISTA live data to expected values at idle and cruise","Replace MAF sensor if cleaning does not resolve"],
+    tags:["MAF","Performance","Air Leak"],
+    labor:"0.5 - 2.0 hrs",
+    parts:["MAF Sensor: 13627551638","Air Filter: 13727848587"]
+  },
+  {
+    code:"P0102", sev:"sm", sevtxt:"MEDIUM", system:"Mass Airflow",
+    color:"#d4a843",
+    title:"Mass Air Flow Circuit Low Input",
+    desc:"The MAF sensor is sending a signal voltage that is lower than expected minimum threshold. The ECM sees the signal and knows it is too low to be a valid reading.",
+    causes:["MAF sensor signal wire shorted to ground","Faulty MAF sensor producing low voltage output","Poor ground connection at MAF sensor or ECM","Damaged wiring in MAF sensor harness"],
+    fixes:["Check MAF signal voltage — should be above 0.5V at key-on engine off","Inspect wiring harness from MAF to ECM for damage or pinched wires","Check ground circuit resistance — should be less than 1 ohm","Replace MAF sensor if voltage is confirmed low with good wiring"],
+    tags:["MAF","Low Signal","Wiring"],
+    labor:"0.5 - 1.0 hrs",
+    parts:["MAF Sensor: 13627551638"]
+  },
+  {
+    code:"P0103", sev:"sm", sevtxt:"MEDIUM", system:"Mass Airflow",
+    color:"#d4a843",
+    title:"Mass Air Flow Circuit High Input",
+    desc:"The MAF sensor signal voltage is higher than the expected maximum threshold. The ECM detects the signal but recognizes it exceeds the valid operating range.",
+    causes:["MAF sensor signal wire shorted to voltage (5V or battery)","Faulty MAF sensor producing high voltage output","Contamination on the sensor element causing high reading","Wiring harness chafing causing intermittent short to power"],
+    fixes:["Check MAF signal voltage — should not exceed 5.0V","Inspect wiring for chafe marks against engine components or brackets","Test MAF sensor output with multimeter at various RPM","Replace MAF sensor if voltage confirmed high with good wiring"],
+    tags:["MAF","High Signal","Wiring"],
+    labor:"0.5 - 1.0 hrs",
+    parts:["MAF Sensor: 13627551638"]
+  },
+  {
+    code:"P0112", sev:"sm", sevtxt:"MEDIUM", system:"Intake Air Temp",
+    color:"#d4a843",
+    title:"Intake Air Temperature Sensor Circuit Low",
+    desc:"The Intake Air Temperature (IAT) sensor signal is below the minimum expected threshold. Most BMW IAT sensors are integrated into the MAF sensor assembly.",
+    causes:["IAT sensor (integrated in MAF) shorted internally","Signal wire shorted to ground","Damaged MAF/IAT sensor connector","Faulty ECM — rare"],
+    fixes:["Check IAT resistance — at 20C should be approx 2.3 kohm","Inspect MAF sensor connector and wiring for damage","Replace MAF/IAT sensor assembly if resistance is out of spec","Clear code and recheck — rule out intermittent connector issue first"],
+    tags:["IAT","Temperature Sensor","MAF"],
+    labor:"0.5 hrs",
+    parts:["MAF/IAT Sensor: 13627551638"]
+  },
+  {
+    code:"P0113", sev:"sm", sevtxt:"MEDIUM", system:"Intake Air Temp",
+    color:"#d4a843",
+    title:"Intake Air Temperature Sensor Circuit High",
+    desc:"The IAT sensor signal voltage is above the maximum expected threshold. Typically means an open circuit or failed sensor reading as very cold temperature (-40C or above 150C).",
+    causes:["IAT sensor open circuit or internal failure","Signal wire open (broken) or disconnected","Corroded or loose MAF sensor connector","Damaged reference voltage wire"],
+    fixes:["Check for 5V reference at IAT signal wire — if missing trace back to ECM","Measure IAT resistance — open circuit (infinite resistance) indicates failed sensor","Inspect and clean MAF sensor connector","Replace MAF/IAT assembly if sensor is confirmed open circuit"],
+    tags:["IAT","Open Circuit","MAF"],
+    labor:"0.5 hrs",
+    parts:["MAF/IAT Sensor: 13627551638"]
+  },
+  {
+    code:"P0128", sev:"sl2", sevtxt:"LOW", system:"Cooling System",
+    color:"#00c87a",
+    title:"Coolant Temperature Below Thermostat Regulating Temp",
+    desc:"The engine is not reaching normal operating temperature within the expected time after startup. The ECM monitors coolant temp and expects it to reach approximately 90-105C within a set drive cycle. Very common on BMW B58 and N-series engines due to thermostat failure.",
+    causes:["Faulty thermostat stuck open (most common cause on BMW)","Low coolant level","Coolant temperature sensor faulty — reading low","Thermostat housing failure","ECM calibration issue — rare"],
+    fixes:["Confirm with ISTA live data — coolant temp should reach 90C+ after 10 min highway drive","Replace thermostat — BMW integrated thermostat housing is the typical repair","Check coolant level in expansion tank","Inspect coolant temp sensor if thermostat replacement does not fix","Verify with ISTA road test monitor that temp reaches regulating range after repair"],
+    tags:["Thermostat","Coolant Temp","Common Failure"],
+    labor:"2.0 - 3.0 hrs",
+    parts:["Thermostat Housing B58: 11538675654","Coolant Temp Sensor: 13621433077","BMW Blue Coolant: 82141467704"]
+  },
+  {
+    code:"P0171", sev:"sh", sevtxt:"HIGH", system:"Fuel Trim",
+    color:"#e07820",
+    title:"System Too Lean — Bank 1",
+    desc:"The ECM has detected that the air/fuel mixture is running lean on Bank 1. The upstream O2 sensor is reporting excess oxygen in the exhaust stream and the ECM has added maximum positive fuel trim trying to compensate. Very common on high mileage BMW engines.",
+    causes:["Vacuum leak — cracked intake boot, loose hose, or failed gasket","Dirty or failing MAF sensor reading low","Weak fuel pump or clogged fuel filter causing low fuel pressure","Clogged or sticking fuel injectors not delivering enough fuel","Faulty upstream O2 sensor","VANOS malfunction causing lean condition"],
+    fixes:["Smoke test entire intake system from MAF to intake manifold — start here","Clean MAF sensor with MAF cleaner spray — very common fix","Check fuel pressure at rail: idle spec is 50-65 psi for B58","Perform injector balance test in ISTA to identify weak injectors","Replace upstream O2 sensor if it shows slow or erratic response","Check STFT and LTFT values — LTFT above +10% confirms lean condition"],
+    tags:["Fuel Trim","Lean","O2 Sensor","MAF"],
+    labor:"1.5 - 3.0 hrs diagnostic",
+    parts:["MAF Sensor: 13627551638","O2 Sensor Upstream: 11787553060","Intake Boot: 13717524898"]
+  },
+  {
+    code:"P0172", sev:"sh", sevtxt:"HIGH", system:"Fuel Trim",
+    color:"#e07820",
+    title:"System Too Rich — Bank 1",
+    desc:"The air/fuel mixture is running excessively rich on Bank 1. The ECM is seeing too little oxygen in the exhaust stream and has pulled fuel trim to the negative maximum trying to compensate.",
+    causes:["Leaking fuel injector flooding the cylinder","Faulty upstream O2 sensor stuck reading lean (causing ECM to add fuel)","Stuck open fuel pressure regulator","MAF sensor reading high causing ECM to over-fuel","Coolant temp sensor reading cold causing rich fuel map","Oil or coolant entering combustion chamber"],
+    fixes:["Check STFT and LTFT — LTFT below -10% confirms rich condition","Inspect fuel injectors for leakdown — remove plugs and check for fuel fouling","Test O2 sensor response time with live data in ISTA","Check for coolant or oil burning — white/blue smoke from exhaust","Replace faulty injector if leakdown test confirms issue","Verify MAF sensor accuracy at idle and cruise with live data"],
+    tags:["Fuel Trim","Rich","Injector","O2 Sensor"],
+    labor:"1.5 - 4.0 hrs",
+    parts:["Fuel Injector B58: 13537639990","O2 Sensor Upstream: 11787553060"]
+  },
+  {
+    code:"P0174", sev:"sh", sevtxt:"HIGH", system:"Fuel Trim",
+    color:"#e07820",
+    title:"System Too Lean — Bank 2",
+    desc:"Same as P0171 but affecting Bank 2. On inline-6 BMW engines (B58, N55) there is only one bank so this code appearing alone (without P0171) may indicate a sensor issue rather than a true lean condition.",
+    causes:["Vacuum leak on intake sideof Bank 2 cylinders","MAF sensor issue","Faulty O2 sensor Bank 2"],
+    fixes:["Follow same diagnostic steps as P0171","On inline-6 engines verify which bank is affected using ISTA","Check O2 sensor Bank 2 response with live data","Smoke test intake for vacuum leaks"],
+    tags:["Fuel Trim","Lean","Bank 2"],
+    labor:"1.5 - 3.0 hrs",
+    parts:["MAF Sensor: 13627551638","O2 Sensor: 11787553060"]
+  },
+  {
+    code:"P0175", sev:"sh", sevtxt:"HIGH", system:"Fuel Trim",
+    color:"#e07820",
+    title:"System Too Rich — Bank 2",
+    desc:"Fuel mixture running rich on Bank 2. Follow same diagnostic approach as P0172. On single-bank inline-6 BMW engines if this appears without P0172 suspect a sensor fault.",
+    causes:["Leaking fuel injector on Bank 2 cylinders","Faulty O2 sensor reading lean on Bank 2","Coolant temp sensor fault causing over-fueling"],
+    fixes:["Check LTFT on Bank 2 with ISTA live data","Perform injector leakdown test","Test O2 sensor Bank 2 switching speed","Replace faulty injector or sensor as indicated"],
+    tags:["Fuel Trim","Rich","Bank 2"],
+    labor:"1.5 - 4.0 hrs",
+    parts:["Fuel Injector B58: 13537639990"]
+  },
+  {
+    code:"P0191", sev:"sh", sevtxt:"HIGH", system:"Fuel Pressure",
+    color:"#e07820",
+    title:"Fuel Rail Pressure Sensor Circuit Range / Performance",
+    desc:"The fuel rail pressure sensor signal is within circuit range but does not match expected pressure values. On B58 engines this can indicate HPFP issues, low pressure pump failure, or a faulty rail pressure sensor.",
+    causes:["Faulty high pressure fuel pump (HPFP) not building adequate pressure","Weak low pressure fuel pump (in-tank)","Fuel rail pressure sensor failure","Clogged fuel filter restricting flow","Wiring issue to pressure sensor"],
+    fixes:["Connect ISTA and monitor fuel rail pressure live — idle spec B58 is 2,000-3,500 kPa","If pressure is low check low pressure pump first — spec is 500-700 kPa at feed","Test HPFP by monitoring pressure under acceleration — should reach 20,000+ kPa","Replace fuel rail pressure sensor if pump pressures are in spec","Check fuel filter if low pressure pump output is low"],
+    tags:["Fuel Pressure","HPFP","Rail Pressure"],
+    labor:"1.0 - 3.0 hrs",
+    parts:["HPFP B58: 13518604229","Fuel Rail Pressure Sensor: 13537537319"]
+  }
+];
+
+function sclass(s){ return s; }
+function accentColor(c){ return c; }
+
+function renderCard(d){
+  var causesHtml = d.causes.map(function(c,i){
+    return '<div class="ci"><span class="inum">'+(i+1)+'.</span><span>'+c+'</span></div>';
+  }).join('');
+  var fixesHtml = d.fixes.map(function(f,i){
+    return '<div class="fi"><span class="inum">'+(i+1)+'.</span><span>'+f+'</span></div>';
+  }).join('');
+  var tagsHtml = d.tags.map(function(t){ return '<span class="rtag">'+t+'</span>'; }).join('');
+  var partsHtml = d.parts.map(function(p){ return '<span class="rtag" style="color:#8ab4cc">'+p+'</span>'; }).join('');
+  return '<div class="rcard">' +
+    '<div class="rtop">' +
+    '<div class="raccent" style="background:'+d.color+'"></div>' +
+    '<div class="crow"><span class="rcode">'+d.code+'</span>' +
+    '<span class="sev '+d.sev+'">'+d.sevtxt+'</span>' +
+    '<span class="rsys">'+d.system+'</span></div>' +
+    '<div class="rtitle">'+d.title+'</div>' +
+    '<div class="rdesc">'+d.desc+'</div>' +
+    '</div>' +
+    '<div class="rbody">' +
+    '<div class="rcol"><div class="rct">Possible Causes</div><div class="clist">'+causesHtml+'</div></div>' +
+    '<div class="rcol"><div class="rct">Diagnostic Fixes</div><div class="flist">'+fixesHtml+'</div></div>' +
+    '</div>' +
+    '<div class="rfooter">'+tagsHtml+'<span class="rtag" style="border-color:#1a6bff55;color:#3d8bff">Parts: </span>'+partsHtml+'<span class="rlabor">Labor: '+d.labor+'</span></div>' +
+    '</div>';
+}
+
+function doSearch(){
+  var q = document.getElementById('sinput').value.trim().toUpperCase();
+  var res = document.getElementById('results');
+  if(!q){ res.innerHTML=''; showCats(); return; }
+  document.getElementById('catgrid').style.display='none';
+  var matches = DB.filter(function(d){ return d.code.indexOf(q)>-1 || d.title.toUpperCase().indexOf(q)>-1 || d.system.toUpperCase().indexOf(q)>-1; });
+  if(!matches.length){
+    res.innerHTML='<div class="nofound"><div class="nfi">&#128269;</div><div class="nft">Code Not Found</div><div class="nfs">'+q+' is not in the P0100-P0200 database.<br>This range covers Air/Fuel Metering codes only.<br>More codes coming soon!</div></div>';
+  } else {
+    res.innerHTML = matches.map(renderCard).join('');
+  }
+}
+
+function qs(code){
+  document.getElementById('sinput').value = code;
+  doSearch();
+}
+
+function showCats(){
+  document.getElementById('catgrid').style.display='grid';
+}
+
+showCats();
+document.getElementById('sinput').addEventListener('keydown', function(e){
+  if(e.key==='Enter') doSearch();
+});
+</script>
+</body>
+</html>
