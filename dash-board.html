@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BimmerTech Pro - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--n9:#020b18;--n8:#071428;--n7:#0b1f3a;--bl:#1a6bff;--blb:#3d8bff;--blg:#1a6bff33;--sv:#c8d8e8;--wh:#eef4fb;--dm:#5d7d99;--gd:#d4a843;--gn:#00c87a;--or:#e07820;--rd:#e03030;--br:#1a3a5c;--brb:#1a6bff55}
+html,body{min-height:100%;background:var(--n9);color:var(--sv);font-family:Barlow,sans-serif}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -5%,#0d2a5022 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 79px,#1a3a5c12 80px),repeating-linear-gradient(0deg,transparent,transparent 79px,#1a3a5c12 80px);pointer-events:none;z-index:0}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--bl),var(--gd),var(--bl),transparent);z-index:100}
+.wrap{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:64px;background:#071428ee;backdrop-filter:blur(12px);border-bottom:1px solid var(--br);position:sticky;top:0;z-index:50}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.rl{width:38px;height:38px;border-radius:50%;border:2px solid var(--bl);background:conic-gradient(#0a0a0a 90deg,#fff 90deg 180deg,#0a0a0a 180deg 270deg,#fff 270deg);position:relative;box-shadow:0 0 12px var(--blg)}
+.rl::after{content:"";position:absolute;inset:4px;border-radius:50%;background:conic-gradient(#0055cc 90deg,#fff 90deg 180deg,#0055cc 180deg 270deg,#fff 270deg)}
+.lm{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:19px;letter-spacing:.12em;text-transform:uppercase;color:var(--wh)}
+.ls{font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:.22em;color:var(--blb);text-transform:uppercase}
+.lchip{display:flex;align-items:center;gap:5px;font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--gn)}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px var(--gn)}50%{opacity:.3}}
+.hdate{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dm);letter-spacing:.1em}
+main{flex:1;padding:32px 28px 60px;max-width:1200px;margin:0 auto;width:100%}
+/* WELCOME BANNER */
+.banner{background:linear-gradient(135deg,var(--n7) 0%,var(--n8) 60%,#0a1628 100%);border:1px solid var(--brb);border-radius:12px;padding:30px 36px;margin-bottom:28px;position:relative;overflow:hidden}
+.banner::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--gd),var(--bl))}
+.bwm{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:"Barlow Condensed",sans-serif;font-size:110px;font-weight:800;color:#ffffff03;pointer-events:none;user-select:none}
+.banner-row{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.b-eye{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.3em;color:var(--bl);text-transform:uppercase;margin-bottom:6px}
+.b-title{font-family:"Barlow Condensed",sans-serif;font-size:40px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wh);line-height:1;margin-bottom:6px}
+.b-sub{font-family:"Share Tech Mono",monospace;font-size:11px;color:#8ab4cc}
+.b-stats{display:flex;gap:1px;background:var(--br);border-radius:6px;overflow:hidden}
+.bs{background:var(--n9);padding:14px 18px;min-width:100px;text-align:center}
+.bs-val{font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:800;color:var(--wh)}
+.bs-lbl{font-family:"Share Tech Mono",monospace;font-size:9px;letter-spacing:.18em;color:var(--dm);text-transform:uppercase;margin-top:2px}
+/* VEHICLE BAR */
+.vbar{display:flex;align-items:center;gap:14px;background:var(--n8);border:1px solid var(--brb);border-radius:8px;padding:14px 22px;margin-bottom:28px;flex-wrap:wrap}
+.vbar-label{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:.2em;color:var(--dm);text-transform:uppercase;white-space:nowrap}
+.vbar-val{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:700;color:var(--wh);text-transform:uppercase;letter-spacing:.06em}
+.vbar-sep{color:var(--brb);margin:0 4px}
+.vbar-change{margin-left:auto;padding:8px 18px;border:1px solid var(--br);background:transparent;color:var(--dm);font-family:"Barlow Condensed",sans-serif;font-size:12px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all .2s;text-decoration:none;display:inline-block}
+.vbar-change:hover{border-color:var(--bl);color:var(--blb);background:var(--blg)}
+/* SECTION TITLE */
+.sec-title{font-family:"Barlow Condensed",sans-serif;font-size:12px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--dm);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--br)}
+/* MAIN TOOL CARDS */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.tool-card{background:var(--n8);border:1px solid var(--br);border-radius:10px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:all .25s;position:relative;cursor:pointer}
+.tool-card:hover{border-color:var(--bl);transform:translateY(-3px);box-shadow:0 10px 30px #00000055}
+.tool-card.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+.tc-top{padding:24px 22px 16px;flex:1;position:relative;overflow:hidden}
+.tc-wm{position:absolute;right:10px;bottom:-10px;font-size:60px;opacity:.06;pointer-events:none;user-select:none}
+.tc-icon{font-size:32px;margin-bottom:12px}
+.tc-name{font-family:"Barlow Condensed",sans-serif;font-size:20px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--wh);margin-bottom:6px}
+.tc-desc{font-size:12px;color:var(--dm);line-height:1.6}
+.tc-bottom{padding:12px 22px;border-top:1px solid var(--br);background:#ffffff03;display:flex;align-items:center;justify-content:space-between}
+.tc-tag{font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--dm);letter-spacing:.08em}
+.tc-arrow{font-size:14px;color:var(--bl);transition:transform .2s}
+.tool-card:hover .tc-arrow{transform:translateX(4px)}
+.tc-badge{display:inline-block;padding:2px 7px;border-radius:2px;font-family:"Share Tech Mono",monospace;font-size:9px;font-weight:700;text-transform:uppercase}
+.badge-live{background:#00c87a22;border:1px solid #00c87a55;color:var(--gn)}
+.badge-soon{background:#d4a84322;border:1px solid #d4a84355;color:var(--gd)}
+.badge-new{background:#1a6bff22;border:1px solid #1a6bff55;color:var(--blb)}
+/* QUICK ACCESS ROW */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.qcard{background:var(--n8);border:1px solid var(--br);border-radius:7px;padding:16px 18px;text-decoration:none;display:flex;align-items:center;gap:12px;transition:all .2s}
+.qcard:hover{border-color:var(--bl);background:var(--n7)}
+.qcard-icon{font-size:20px;flex-shrink:0}
+.qcard-text{flex:1}
+.qcard-name{font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wh);margin-bottom:2px}
+.qcard-sub{font-family:"Share Tech Mono",monospace;font-size:9px;color:var(--dm)}
+/* INFO ROW */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.info-card{background:var(--n8);border:1px solid var(--br);border-radius:8px;overflow:hidden}
+.ic-head{padding:12px 18px;border-bottom:1px solid var(--br);background:#ffffff04;font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8ab4cc}
+.ic-body{padding:14px 18px}
+.tip-item{display:flex;gap:10px;font-size:12px;color:var(--sv);line-height:1.5;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--br)}
+.tip-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.tip-item::before{content:"&#128161;";font-size:13px;flex-shrink:0}
+.update-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--br)}
+.update-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.upd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.upd-text{font-size:12px;color:var(--sv);line-height:1.5}
+.upd-date{font-family:"Share Tech Mono",monospace;font-size:9px;color:var(--dm);margin-top:2px}
+@media(max-width:900px){main{padding:16px 14px 40px}header{padding:0 14px}.tools-grid{grid-template-columns:1fr 1fr}.quick-grid{grid-template-columns:1fr 1fr}.info-grid{grid-template-columns:1fr}}
+@media(max-width:500px){.tools-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a href="dashboard.html" class="logo">
+    <div class="rl"></div>
+    <div><div class="lm">BimmerTech Pro</div><div class="ls">Diagnostic &amp; Repair Platform</div></div>
+  </a>
+  <div class="hdate" id="hdate"></div>
+  <div class="lchip"><div class="ldot"></div>System Online</div>
+</header>
+
+<main>
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="bwm">BMW</div>
+    <div class="banner-row">
+      <div>
+        <div class="b-eye">BimmerTech Pro &mdash; Shop Dashboard</div>
+        <div class="b-title">Welcome Back,<br>Tech.</div>
+        <div class="b-sub">&#9651; Select a tool below &mdash; or pick a vehicle to begin diagnostics</div>
+      </div>
+      <div class="b-stats">
+        <div class="bs"><div class="bs-val">3</div><div class="bs-lbl">Tools Live</div></div>
+        <div class="bs"><div class="bs-val">48</div><div class="bs-lbl">Labor Ops</div></div>
+        <div class="bs"><div class="bs-val">12</div><div class="bs-lbl">Fault Codes</div></div>
+        <div class="bs"><div class="bs-val">8</div><div class="bs-lbl">BMW Series</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VEHICLE BAR -->
+
+  <div class="vbar">
+    <span class="vbar-label">Current Vehicle:</span>
+    <span class="vbar-val" id="vbarVal">No Vehicle Selected</span>
+    <a href="index.html" class="vbar-change">&#128663; Select Vehicle</a>
+  </div>
+
+  <!-- MAIN TOOLS -->
+
+  <div class="sec-title">Core Tools</div>
+  <div class="tools-grid">
+
+```
+<a href="index.html" class="tool-card">
+  <div class="tc-top">
+    <div class="tc-wm">&#128663;</div>
+    <div class="tc-icon">&#128663;</div>
+    <div class="tc-name">Vehicle Selector</div>
+    <div class="tc-desc">Choose your BMW by series, model, year and engine to load vehicle-specific repair data and procedures.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-live">Live</span>
+    <span class="tc-tag">8 Series &bull; All Models</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+
+<a href="labor-guide.html" class="tool-card">
+  <div class="tc-top">
+    <div class="tc-wm">&#128203;</div>
+    <div class="tc-icon">&#128203;</div>
+    <div class="tc-name">Labor Time Guide</div>
+    <div class="tc-desc">Flat-rate labor times for 48 BMW repair operations. Set your shop rate and build full job estimates instantly.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-live">Live</span>
+    <span class="tc-tag">48 Operations &bull; 8 Categories</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+
+<a href="fault-codes.html" class="tool-card">
+  <div class="tc-top">
+    <div class="tc-wm">&#9889;</div>
+    <div class="tc-icon">&#9889;</div>
+    <div class="tc-name">Fault Code Lookup</div>
+    <div class="tc-desc">Search BMW DTC and OBD-II fault codes. Get causes, step-by-step fixes, part numbers and labor estimates.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-live">Live</span>
+    <span class="tc-tag">P0100&ndash;P0200 &bull; More Coming</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+
+<a href="#" class="tool-card disabled">
+  <div class="tc-top">
+    <div class="tc-wm">&#128268;</div>
+    <div class="tc-icon">&#128268;</div>
+    <div class="tc-name">Wiring Diagrams</div>
+    <div class="tc-desc">Interactive BMW wiring diagrams for electrical diagnosis. Search by system, component or connector location.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-soon">Coming Soon</span>
+    <span class="tc-tag">All Systems</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+
+<a href="#" class="tool-card disabled">
+  <div class="tc-top">
+    <div class="tc-wm">&#128196;</div>
+    <div class="tc-icon">&#128196;</div>
+    <div class="tc-name">Repair Procedures</div>
+    <div class="tc-desc">Step-by-step repair procedures with torque specs, part numbers, and tech warnings for BMW-specific jobs.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-soon">Coming Soon</span>
+    <span class="tc-tag">All Series</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+
+<a href="#" class="tool-card disabled">
+  <div class="tc-top">
+    <div class="tc-wm">&#128295;</div>
+    <div class="tc-icon">&#128295;</div>
+    <div class="tc-name">TSB Database</div>
+    <div class="tc-desc">BMW Technical Service Bulletins organized by model and year. Find factory-issued repair guidance fast.</div>
+  </div>
+  <div class="tc-bottom">
+    <span class="tc-badge badge-soon">Coming Soon</span>
+    <span class="tc-tag">All Models</span>
+    <span class="tc-arrow">&#8594;</span>
+  </div>
+</a>
+```
+
+  </div>
+
+  <!-- QUICK ACCESS -->
+
+  <div class="sec-title">Quick Access</div>
+  <div class="quick-grid">
+    <a href="fault-codes.html" class="qcard">
+      <div class="qcard-icon">&#9889;</div>
+      <div class="qcard-text"><div class="qcard-name">P0171 &mdash; System Lean</div><div class="qcard-sub">Most searched code</div></div>
+    </a>
+    <a href="fault-codes.html" class="qcard">
+      <div class="qcard-icon">&#9889;</div>
+      <div class="qcard-text"><div class="qcard-name">P0128 &mdash; Thermostat</div><div class="qcard-sub">Very common on BMW</div></div>
+    </a>
+    <a href="labor-guide.html" class="qcard">
+      <div class="qcard-icon">&#128203;</div>
+      <div class="qcard-text"><div class="qcard-name">Oil Service Labor</div><div class="qcard-sub">0.5 hr &mdash; B58 engine</div></div>
+    </a>
+    <a href="labor-guide.html" class="qcard">
+      <div class="qcard-icon">&#128203;</div>
+      <div class="qcard-text"><div class="qcard-name">Brake Job Labor</div><div class="qcard-sub">Front pads &amp; rotors</div></div>
+    </a>
+  </div>
+
+  <!-- INFO ROW -->
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-head">&#128161; BMW Tech Tips</div>
+      <div class="ic-body">
+        <div class="tip-item">Battery registration is REQUIRED after every BMW battery replacement. Without it the charging system will not manage the new battery correctly and it will fail early.</div>
+        <div class="tip-item">EPB service mode must be activated via iDrive before touching rear brakes. Forcing pistons without service mode will destroy the EPB motor.</div>
+        <div class="tip-item">BMW uses DOT 4 Low Viscosity brake fluid only. Standard DOT 4 will trigger ABS fault codes on modern BMW models.</div>
+        <div class="tip-item">On B58 engines always check VANOS solenoid filter screens before replacing solenoids. Dirty oil clogs screens and mimics solenoid failure.</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">&#128197; Recent Updates</div>
+      <div class="ic-body">
+        <div class="update-item">
+          <div class="upd-dot" style="background:var(--gn)"></div>
+          <div><div class="upd-text">Fault Code Lookup launched &mdash; P0100 to P0200 range now searchable</div><div class="upd-date">MARCH 2025</div></div>
+        </div>
+        <div class="update-item">
+          <div class="upd-dot" style="background:var(--gn)"></div>
+          <div><div class="upd-text">Labor Time Guide live with 48 operations and live estimate builder</div><div class="upd-date">MARCH 2025</div></div>
+        </div>
+        <div class="update-item">
+          <div class="upd-dot" style="background:var(--gn)"></div>
+          <div><div class="upd-text">Vehicle Selector updated with 2024 model year data across all series</div><div class="upd-date">MARCH 2025</div></div>
+        </div>
+        <div class="update-item">
+          <div class="upd-dot" style="background:var(--gd)"></div>
+          <div><div class="upd-text">Repair Procedures page &mdash; in development</div><div class="upd-date">COMING SOON</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+var d = new Date();
+var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+document.getElementById('hdate').textContent = days[d.getDay()] + ' ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+
+var saved = sessionStorage.getItem('btp_vehicle');
+if(saved){
+  try{ var v = JSON.parse(saved); document.getElementById('vbarVal').textContent = v.year + ' BMW ' + v.model + ' · ' + v.engine; }catch(e){}
+}
+</script>
+
+</body>
+</html>
