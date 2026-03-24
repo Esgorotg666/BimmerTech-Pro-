@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BimmerTech Pro — Vehicle Selector</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ===== GLOBAL NAV ===== */
+.gnav{display:flex;align-items:center;gap:4px;background:var(--navy-800);border:1px solid var(--border);border-radius:5px;padding:4px}
+.gnav a{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:3px;text-decoration:none;
+  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--text-dim);transition:all .2s;white-space:nowrap;border:1px solid transparent}
+.gnav a:hover{color:var(--silver);background:var(--navy-700)}
+.gnav a.active{color:var(--blue-bright);background:var(--blue-glow);border-color:var(--border-bright)}
+.gnav a .nav-icon{font-size:13px}
+.gnav-divider{width:1px;height:20px;background:var(--border);margin:0 2px}
+.gnav-badge{display:inline-block;padding:1px 5px;border-radius:2px;background:var(--gold);color:var(--navy-900);
+  font-family:'Share Tech Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.05em;margin-left:2px;vertical-align:middle}
+</style>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+–navy-900: #020b18;
+–navy-800: #071428;
+–navy-700: #0b1f3a;
+–navy-600: #102847;
+–navy-500: #163354;
+–blue-accent: #1a6bff;
+–blue-bright: #3d8bff;
+–blue-glow: #1a6bff33;
+–steel: #4a7fa5;
+–steel-light: #8ab4cc;
+–silver: #c8d8e8;
+–white: #eef4fb;
+–text-dim: #5d7d99;
+–gold: #d4a843;
+–gold-dim: #a07820;
+–red: #e03030;
+–success: #00c87a;
+–border: #1a3a5c;
+–border-bright: #1a6bff66;
+}
+
+html, body {
+height: 100%;
+background: var(–navy-900);
+color: var(–silver);
+font-family: ‘Barlow’, sans-serif;
+font-weight: 400;
+overflow-x: hidden;
+}
+
+/* === BACKGROUND === */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background:
+radial-gradient(ellipse 80% 60% at 50% -10%, #0d2a5022 0%, transparent 70%),
+radial-gradient(ellipse 40% 30% at 80% 100%, #1a6bff0a 0%, transparent 60%),
+repeating-linear-gradient(90deg, transparent, transparent 79px, #1a3a5c18 80px),
+repeating-linear-gradient(0deg, transparent, transparent 79px, #1a3a5c18 80px);
+pointer-events: none;
+z-index: 0;
+}
+
+body::after {
+content: ‘’;
+position: fixed;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: linear-gradient(90deg, transparent, var(–blue-accent), var(–gold), var(–blue-accent), transparent);
+z-index: 100;
+}
+
+/* === LAYOUT === */
+.page-wrap {
+position: relative;
+z-index: 1;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+
+/* === HEADER === */
+header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 48px;
+height: 72px;
+background: linear-gradient(180deg, #071428ee 0%, #071428aa 100%);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(–border);
+position: sticky;
+top: 0;
+z-index: 50;
+}
+
+.logo-block {
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.logo-roundel {
+width: 44px;
+height: 44px;
+border-radius: 50%;
+border: 2px solid var(–blue-accent);
+background: conic-gradient(from 0deg, #0a0a0a 0deg, #0a0a0a 90deg, #fff 90deg, #fff 180deg, #0a0a0a 180deg, #0a0a0a 270deg, #fff 270deg, #fff 360deg);
+position: relative;
+box-shadow: 0 0 16px var(–blue-glow), inset 0 0 8px #0006;
+}
+
+.logo-roundel::after {
+content: ‘’;
+position: absolute;
+inset: 4px;
+border-radius: 50%;
+background: conic-gradient(from 0deg, #0055cc 0deg, #0055cc 90deg, #fff 90deg, #fff 180deg, #0055cc 180deg, #0055cc 270deg, #fff 270deg, #fff 360deg);
+border: 1.5px solid #1a3a5c;
+}
+
+.logo-text {
+display: flex;
+flex-direction: column;
+line-height: 1;
+}
+
+.logo-main {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-weight: 800;
+font-size: 22px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–white);
+}
+
+.logo-sub {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.25em;
+color: var(–blue-bright);
+text-transform: uppercase;
+}
+
+.header-right {
+display: flex;
+align-items: center;
+gap: 24px;
+}
+
+.status-chip {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 6px 14px;
+border: 1px solid #00c87a44;
+border-radius: 4px;
+background: #00c87a0a;
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.1em;
+color: var(–success);
+}
+
+.status-dot {
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: var(–success);
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 1; box-shadow: 0 0 4px var(–success); }
+50% { opacity: 0.4; box-shadow: none; }
+}
+
+.header-nav {
+display: flex;
+gap: 8px;
+}
+
+.nav-btn {
+padding: 8px 18px;
+border: 1px solid var(–border);
+background: transparent;
+color: var(–text-dim);
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 13px;
+font-weight: 600;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+cursor: pointer;
+border-radius: 3px;
+transition: all 0.2s;
+}
+
+.nav-btn:hover {
+border-color: var(–blue-accent);
+color: var(–blue-bright);
+background: var(–blue-glow);
+}
+
+/* === MAIN === */
+main {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 60px 24px 80px;
+}
+
+/* === PAGE TITLE === */
+.page-title-block {
+text-align: center;
+margin-bottom: 52px;
+animation: fadeDown 0.6s ease both;
+}
+
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.page-eyebrow {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.35em;
+text-transform: uppercase;
+color: var(–blue-accent);
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+}
+
+.page-eyebrow::before,
+.page-eyebrow::after {
+content: ‘’;
+display: inline-block;
+width: 40px;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–blue-accent));
+}
+
+.page-eyebrow::after {
+background: linear-gradient(90deg, var(–blue-accent), transparent);
+}
+
+.page-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 52px;
+font-weight: 800;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: var(–white);
+line-height: 1;
+margin-bottom: 12px;
+}
+
+.page-title span {
+color: var(–blue-accent);
+}
+
+.page-subtitle {
+font-size: 15px;
+font-weight: 300;
+color: var(–text-dim);
+letter-spacing: 0.05em;
+}
+
+/* === PROGRESS BAR === */
+.progress-track {
+width: 100%;
+max-width: 780px;
+margin-bottom: 48px;
+animation: fadeUp 0.6s 0.1s ease both;
+}
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(16px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-steps {
+display: flex;
+align-items: center;
+position: relative;
+}
+
+.progress-line {
+position: absolute;
+top: 20px;
+left: 20px;
+right: 20px;
+height: 2px;
+background: var(–border);
+z-index: 0;
+}
+
+.progress-line-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–blue-accent), var(–blue-bright));
+transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+box-shadow: 0 0 8px var(–blue-accent);
+width: 0%;
+}
+
+.step-node {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 10px;
+position: relative;
+z-index: 1;
+flex: 1;
+}
+
+.step-circle {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+border: 2px solid var(–border);
+background: var(–navy-800);
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘Barlow Condensed’, sans-serif;
+font-weight: 700;
+font-size: 14px;
+color: var(–text-dim);
+transition: all 0.4s;
+position: relative;
+}
+
+.step-node.active .step-circle {
+border-color: var(–blue-accent);
+background: var(–navy-700);
+color: var(–blue-bright);
+box-shadow: 0 0 0 4px var(–blue-glow), 0 0 16px var(–blue-glow);
+}
+
+.step-node.done .step-circle {
+border-color: var(–success);
+background: #00c87a15;
+color: var(–success);
+}
+
+.step-node.done .step-circle::after {
+content: ‘✓’;
+position: absolute;
+font-size: 16px;
+}
+
+.step-node.done .step-num { display: none; }
+
+.step-label {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: var(–text-dim);
+transition: color 0.4s;
+white-space: nowrap;
+}
+
+.step-node.active .step-label { color: var(–blue-bright); }
+.step-node.done .step-label { color: var(–success); }
+
+/* === SELECTOR CONTAINER === */
+.selector-container {
+width: 100%;
+max-width: 780px;
+animation: fadeUp 0.6s 0.2s ease both;
+}
+
+/* === PANEL === */
+.panel {
+background: linear-gradient(135deg, var(–navy-800) 0%, var(–navy-700) 100%);
+border: 1px solid var(–border);
+border-radius: 8px;
+overflow: hidden;
+margin-bottom: 16px;
+transition: border-color 0.3s;
+display: none;
+}
+
+.panel.visible { display: block; }
+
+.panel.active {
+border-color: var(–border-bright);
+box-shadow: 0 0 24px #1a6bff14, 0 4px 32px #00000066;
+}
+
+.panel.locked {
+opacity: 0.5;
+pointer-events: none;
+}
+
+.panel-header {
+display: flex;
+align-items: center;
+padding: 18px 24px;
+border-bottom: 1px solid var(–border);
+background: #ffffff04;
+}
+
+.panel-step-badge {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.2em;
+color: var(–blue-accent);
+padding: 3px 10px;
+border: 1px solid var(–border-bright);
+border-radius: 2px;
+background: var(–blue-glow);
+margin-right: 16px;
+text-transform: uppercase;
+}
+
+.panel-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 17px;
+font-weight: 700;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–white);
+flex: 1;
+}
+
+.panel-selection-display {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 12px;
+color: var(–success);
+display: none;
+align-items: center;
+gap: 8px;
+}
+
+.panel-selection-display.shown { display: flex; }
+
+.panel-selection-display::before {
+content: ‘●’;
+font-size: 8px;
+}
+
+.panel-body {
+padding: 24px;
+}
+
+/* === GRID OPTIONS === */
+.options-grid {
+display: grid;
+gap: 10px;
+}
+
+.options-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.options-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.options-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.options-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+.option-card {
+border: 1px solid var(–border);
+border-radius: 6px;
+padding: 14px 16px;
+cursor: pointer;
+background: var(–navy-900);
+transition: all 0.2s;
+display: flex;
+flex-direction: column;
+gap: 4px;
+position: relative;
+overflow: hidden;
+}
+
+.option-card::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, var(–blue-glow), transparent);
+opacity: 0;
+transition: opacity 0.2s;
+}
+
+.option-card:hover {
+border-color: var(–steel);
+transform: translateY(-1px);
+box-shadow: 0 4px 16px #00000044;
+}
+
+.option-card:hover::before { opacity: 1; }
+
+.option-card.selected {
+border-color: var(–blue-accent);
+background: #1a6bff12;
+box-shadow: 0 0 0 1px var(–blue-accent), 0 0 20px var(–blue-glow);
+}
+
+.option-card.selected::before { opacity: 1; }
+
+.option-main {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 16px;
+font-weight: 700;
+letter-spacing: 0.06em;
+color: var(–white);
+text-transform: uppercase;
+position: relative;
+}
+
+.option-sub {
+font-size: 12px;
+font-weight: 300;
+color: var(–text-dim);
+position: relative;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.option-card.selected .option-main { color: var(–blue-bright); }
+.option-card.selected .option-sub { color: var(–steel-light); }
+
+.check-icon {
+position: absolute;
+top: 10px;
+right: 10px;
+width: 18px;
+height: 18px;
+border-radius: 50%;
+background: var(–blue-accent);
+display: none;
+align-items: center;
+justify-content: center;
+font-size: 10px;
+color: #fff;
+}
+
+.option-card.selected .check-icon { display: flex; }
+
+/* === SUMMARY CARD === */
+.summary-card {
+background: linear-gradient(135deg, var(–navy-800), var(–navy-700));
+border: 1px solid var(–border-bright);
+border-radius: 8px;
+padding: 28px 32px;
+display: none;
+box-shadow: 0 0 40px #1a6bff10;
+position: relative;
+overflow: hidden;
+animation: fadeUp 0.5s ease both;
+}
+
+.summary-card.shown { display: block; }
+
+.summary-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(–blue-accent), var(–gold), var(–blue-accent));
+}
+
+.summary-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 13px;
+font-weight: 600;
+letter-spacing: 0.25em;
+text-transform: uppercase;
+color: var(–text-dim);
+margin-bottom: 20px;
+}
+
+.summary-vehicle {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 36px;
+font-weight: 800;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: var(–white);
+line-height: 1;
+margin-bottom: 8px;
+}
+
+.summary-engine {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 14px;
+color: var(–blue-bright);
+margin-bottom: 28px;
+letter-spacing: 0.08em;
+}
+
+.summary-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 1px;
+background: var(–border);
+border-radius: 4px;
+overflow: hidden;
+margin-bottom: 28px;
+}
+
+.summary-field {
+background: var(–navy-900);
+padding: 14px 18px;
+}
+
+.summary-field-label {
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(–text-dim);
+margin-bottom: 6px;
+}
+
+.summary-field-value {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 16px;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(–white);
+}
+
+.action-row {
+display: flex;
+gap: 12px;
+}
+
+.btn-primary {
+flex: 1;
+padding: 16px 32px;
+background: linear-gradient(135deg, #1255cc, var(–blue-accent));
+border: none;
+border-radius: 5px;
+color: #fff;
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 15px;
+font-weight: 700;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+cursor: pointer;
+transition: all 0.25s;
+box-shadow: 0 4px 20px #1a6bff33;
+position: relative;
+overflow: hidden;
+}
+
+.btn-primary::after {
+content: ‘’;
+position: absolute;
+top: 0; left: -100%;
+width: 60%;
+height: 100%;
+background: linear-gradient(90deg, transparent, #ffffff22, transparent);
+transition: left 0.5s;
+}
+
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 32px #1a6bff55;
+}
+
+.btn-primary:hover::after { left: 150%; }
+
+.btn-secondary {
+padding: 16px 24px;
+background: transparent;
+border: 1px solid var(–border);
+border-radius: 5px;
+color: var(–text-dim);
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+cursor: pointer;
+transition: all 0.25s;
+}
+
+.btn-secondary:hover {
+border-color: var(–steel);
+color: var(–silver);
+}
+
+/* === WATERMARK === */
+.series-watermark {
+position: absolute;
+right: 24px;
+top: 50%;
+transform: translateY(-50%);
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 80px;
+font-weight: 800;
+color: #ffffff04;
+letter-spacing: -0.02em;
+pointer-events: none;
+text-transform: uppercase;
+user-select: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+header { padding: 0 20px; }
+.options-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+.options-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+.options-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+.summary-grid { grid-template-columns: repeat(2, 1fr); }
+.page-title { font-size: 36px; }
+.header-nav { display: none; }
+}
+</style>
+
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="logo-block">
+      <div class="logo-roundel"></div>
+      <div class="logo-text">
+        <span class="logo-main">BimmerTech Pro</span>
+        <span class="logo-sub">Diagnostic & Repair Platform</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-chip">
+        <div class="status-dot"></div>
+        System Online
+      </div>
+      <nav class="gnav">
+        <a href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+        <div class="gnav-divider"></div>
+        <a href="index.html" class="active"><span class="nav-icon">🚗</span> Vehicle Select</a>
+        <div class="gnav-divider"></div>
+        <a href="labor-guide.html"><span class="nav-icon">📋</span> Labor Guide</a>
+        <div class="gnav-divider"></div>
+        <a href="fault-codes.html"><span class="nav-icon">⚡</span> Fault Codes</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+
+  <main>
+    <div class="page-title-block">
+      <div class="page-eyebrow">Vehicle Identification</div>
+      <h1 class="page-title">Select Your <span>BMW</span></h1>
+      <p class="page-subtitle">Choose series, model, year, and engine to load repair data</p>
+    </div>
+
+```
+<!-- PROGRESS STEPS -->
+<div class="progress-track">
+  <div class="progress-steps">
+    <div class="progress-line">
+      <div class="progress-line-fill" id="progressFill"></div>
+    </div>
+    <div class="step-node active" id="step1">
+      <div class="step-circle"><span class="step-num">1</span></div>
+      <div class="step-label">Series</div>
+    </div>
+    <div class="step-node" id="step2">
+      <div class="step-circle"><span class="step-num">2</span></div>
+      <div class="step-label">Model</div>
+    </div>
+    <div class="step-node" id="step3">
+      <div class="step-circle"><span class="step-num">3</span></div>
+      <div class="step-label">Year</div>
+    </div>
+    <div class="step-node" id="step4">
+      <div class="step-circle"><span class="step-num">4</span></div>
+      <div class="step-label">Engine</div>
+    </div>
+  </div>
+</div>
+
+<!-- SELECTOR PANELS -->
+<div class="selector-container">
+
+  <!-- STEP 1: SERIES -->
+  <div class="panel active visible" id="panelSeries">
+    <div class="panel-header">
+      <span class="panel-step-badge">Step 01</span>
+      <span class="panel-title">Select Series</span>
+      <span class="panel-selection-display" id="seriesDisplay"></span>
+    </div>
+    <div class="panel-body">
+      <div class="options-grid cols-4" id="seriesGrid"></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: MODEL -->
+  <div class="panel" id="panelModel">
+    <div class="panel-header">
+      <span class="panel-step-badge">Step 02</span>
+      <span class="panel-title">Select Model</span>
+      <span class="panel-selection-display" id="modelDisplay"></span>
+    </div>
+    <div class="panel-body">
+      <div class="options-grid cols-3" id="modelGrid"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: YEAR -->
+  <div class="panel" id="panelYear">
+    <div class="panel-header">
+      <span class="panel-step-badge">Step 03</span>
+      <span class="panel-title">Select Year</span>
+      <span class="panel-selection-display" id="yearDisplay"></span>
+    </div>
+    <div class="panel-body">
+      <div class="options-grid cols-5" id="yearGrid"></div>
+    </div>
+  </div>
+
+  <!-- STEP 4: ENGINE -->
+  <div class="panel" id="panelEngine">
+    <div class="panel-header">
+      <span class="panel-step-badge">Step 04</span>
+      <span class="panel-title">Select Engine</span>
+      <span class="panel-selection-display" id="engineDisplay"></span>
+    </div>
+    <div class="panel-body">
+      <div class="options-grid cols-2" id="engineGrid"></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY CARD -->
+  <div class="summary-card" id="summaryCard">
+    <span class="series-watermark" id="summaryWatermark"></span>
+    <div class="summary-title">Selected Vehicle — Ready for Diagnostics</div>
+    <div class="summary-vehicle" id="summaryVehicle"></div>
+    <div class="summary-engine" id="summaryEngineLine"></div>
+    <div class="summary-grid">
+      <div class="summary-field">
+        <div class="summary-field-label">Series</div>
+        <div class="summary-field-value" id="sf-series">—</div>
+      </div>
+      <div class="summary-field">
+        <div class="summary-field-label">Model</div>
+        <div class="summary-field-value" id="sf-model">—</div>
+      </div>
+      <div class="summary-field">
+        <div class="summary-field-label">Year</div>
+        <div class="summary-field-value" id="sf-year">—</div>
+      </div>
+      <div class="summary-field">
+        <div class="summary-field-label">Engine</div>
+        <div class="summary-field-value" id="sf-engine">—</div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="btn-primary" onclick="loadRepairData()">🏠 Go to Dashboard</button>
+      <button class="btn-secondary" onclick="resetAll()">↺ Reset</button>
+    </div>
+  </div>
+
+</div>
+```
+
+  </main>
+</div>
+
+<script>
+// =============================================
+//  BMW DATA
+// =============================================
+const BMW_DATA = {
+  "1 Series": {
+    models: {
+      "118i": { years: [2021,2022,2023,2024], engines: {
+        2021: ["1.5L 3-Cyl Turbo (B38)", "2.0L 4-Cyl Turbo (B48)"],
+        2022: ["1.5L 3-Cyl Turbo (B38)", "2.0L 4-Cyl Turbo (B48)"],
+        2023: ["1.5L 3-Cyl Turbo (B38)", "2.0L 4-Cyl Turbo (B48)"],
+        2024: ["1.5L 3-Cyl Turbo (B38)", "2.0L 4-Cyl Turbo (B48)"],
+      }},
+      "120i": { years: [2021,2022,2023,2024], engines: {
+        2021: ["2.0L 4-Cyl Turbo (B48B20)"],
+        2022: ["2.0L 4-Cyl Turbo (B48B20)"],
+        2023: ["2.0L 4-Cyl Turbo (B48B20)"],
+        2024: ["2.0L 4-Cyl Turbo (B48B20)"],
+      }},
+      "128ti": { years: [2021,2022,2023,2024], engines: {
+        2021: ["2.0L 4-Cyl Turbo 265hp (B48)"],
+        2022: ["2.0L 4-Cyl Turbo 265hp (B48)"],
+        2023: ["2.0L 4-Cyl Turbo 265hp (B48)"],
+        2024: ["2.0L 4-Cyl Turbo 265hp (B48)"],
+      }},
+      "M135i xDrive": { years: [2020,2021,2022,2023,2024], engines: {
+        2020: ["2.0L 4-Cyl Turbo 306hp (B48A20T1)"],
+        2021: ["2.0L 4-Cyl Turbo 306hp (B48A20T1)"],
+        2022: ["2.0L 4-Cyl Turbo 306hp (B48A20T1)"],
+        2023: ["2.0L 4-Cyl Turbo 306hp (B48A20T1)"],
+        2024: ["2.0L 4-Cyl Turbo 306hp (B48A20T1)"],
+      }},
+    }
+  },
+  "2 Series": {
+    models: {
+      "228i xDrive": { years: [2021,2022,2023,2024], engines: {
+        2021: ["2.0L 4-Cyl Turbo (B48)"],
+        2022: ["2.0L 4-Cyl Turbo (B48)"],
+        2023: ["2.0L 4-Cyl Turbo (B48)"],
+        2024: ["2.0L 4-Cyl Turbo (B48)"],
+      }},
+      "230i": { years: [2022,2023,2024], engines: {
+        2022: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+        2023: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+        2024: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+      }},
+      "M240i xDrive": { years: [2022,2023,2024], engines: {
+        2022: ["3.0L 6-Cyl Turbo 382hp (B58B30M1)"],
+        2023: ["3.0L 6-Cyl Turbo 382hp (B58B30M1)"],
+        2024: ["3.0L 6-Cyl Turbo 382hp (B58B30M1)"],
+      }},
+      "M2": { years: [2023,2024], engines: {
+        2023: ["3.0L I6 Twin-Turbo 453hp (S58B30T0)"],
+        2024: ["3.0L I6 Twin-Turbo 453hp (S58B30T0)"],
+      }},
+    }
+  },
+  "3 Series": {
+    models: {
+      "318i": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019: ["1.5L 3-Cyl Turbo (B38B15)"], 2020: ["1.5L 3-Cyl Turbo (B38B15)"],
+        2021: ["1.5L 3-Cyl Turbo (B38B15)"], 2022: ["1.5L 3-Cyl Turbo (B38B15)"],
+        2023: ["2.0L 4-Cyl Turbo (B48B20)"], 2024: ["2.0L 4-Cyl Turbo (B48B20)"],
+      }},
+      "320i": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019: ["2.0L 4-Cyl Turbo 184hp (B48B20)"], 2020: ["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2021: ["2.0L 4-Cyl Turbo 184hp (B48B20)"], 2022: ["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2023: ["2.0L 4-Cyl Turbo 184hp (B48B20)"], 2024: ["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+      }},
+      "330i": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"], 2020: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+        2021: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"], 2022: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+        2023: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"], 2024: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+      }},
+      "330e": { years: [2020,2021,2022,2023,2024], engines: {
+        2020: ["2.0L 4-Cyl Turbo PHEV (B48X20B)"], 2021: ["2.0L 4-Cyl Turbo PHEV (B48X20B)"],
+        2022: ["2.0L 4-Cyl Turbo PHEV (B48X20B)"], 2023: ["2.0L 4-Cyl Turbo PHEV (B48X20B)"],
+        2024: ["2.0L 4-Cyl Turbo PHEV (B48X20B)"],
+      }},
+      "340i": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019: ["3.0L I6 Turbo 382hp (B58B30M0)"], 2020: ["3.0L I6 Turbo 382hp (B58B30M0)"],
+        2021: ["3.0L I6 Turbo 382hp (B58B30M0)"], 2022: ["3.0L I6 Turbo 382hp (B58B30M0)"],
+        2023: ["3.0L I6 Turbo 382hp (B58B30M0)"], 2024: ["3.0L I6 Turbo 382hp (B58B30M0)"],
+      }},
+      "M3": { years: [2021,2022,2023,2024], engines: {
+        2021: ["3.0L I6 Twin-Turbo 473hp (S58B30O0)", "3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)"],
+        2022: ["3.0L I6 Twin-Turbo 473hp (S58B30O0)", "3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)"],
+        2023: ["3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)", "3.0L I6 Twin-Turbo 530hp CS (S58B30T1)"],
+        2024: ["3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)", "3.0L I6 Twin-Turbo 530hp CS (S58B30T1)"],
+      }},
+    }
+  },
+  "4 Series": {
+    models: {
+      "420i": { years: [2021,2022,2023,2024], engines: {
+        2021: ["2.0L 4-Cyl Turbo 184hp (B48B20)"], 2022: ["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2023: ["2.0L 4-Cyl Turbo 184hp (B48B20)"], 2024: ["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+      }},
+      "430i": { years: [2021,2022,2023,2024], engines: {
+        2021: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"], 2022: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+        2023: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"], 2024: ["2.0L 4-Cyl Turbo 255hp (B48B20B)"],
+      }},
+      "440i": { years: [2021,2022,2023,2024], engines: {
+        2021: ["3.0L I6 Turbo 374hp (B58B30C)"], 2022: ["3.0L I6 Turbo 374hp (B58B30C)"],
+        2023: ["3.0L I6 Turbo 374hp (B58B30C)"], 2024: ["3.0L I6 Turbo 374hp (B58B30C)"],
+      }},
+      "M4": { years: [2021,2022,2023,2024], engines: {
+        2021: ["3.0L I6 Twin-Turbo 473hp (S58B30O0)", "3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)"],
+        2022: ["3.0L I6 Twin-Turbo 473hp (S58B30O0)", "3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)"],
+        2023: ["3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)", "3.0L I6 Twin-Turbo 530hp CSL (S58B30T2)"],
+        2024: ["3.0L I6 Twin-Turbo 503hp Competition (S58B30T0)", "3.0L I6 Twin-Turbo 530hp CSL (S58B30T2)"],
+      }},
+    }
+  },
+  "5 Series": {
+    models: {
+      "520i": { years: [2017,2018,2019,2020,2021,2022,2023,2024], engines: {
+        2017:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2018:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2019:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2020:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2021:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2022:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2023:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2024:["2.0L 4-Cyl Turbo 197hp (B48B20B)"],
+      }},
+      "530i": { years: [2017,2018,2019,2020,2021,2022,2023,2024], engines: {
+        2017:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2018:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2019:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2020:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2021:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2022:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2023:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2024:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+      }},
+      "540i": { years: [2017,2018,2019,2020,2021,2022,2023,2024], engines: {
+        2017:["3.0L I6 Turbo 340hp (B58B30M0)"],2018:["3.0L I6 Turbo 340hp (B58B30M0)"],
+        2019:["3.0L I6 Turbo 340hp (B58B30M0)"],2020:["3.0L I6 Turbo 340hp (B58B30M0)"],
+        2021:["3.0L I6 Turbo 335hp (B58B30M1)"],2022:["3.0L I6 Turbo 335hp (B58B30M1)"],
+        2023:["3.0L I6 Turbo 335hp (B58B30M1)"],2024:["3.0L I6 Turbo 335hp (B58B30M1)"],
+      }},
+      "550e": { years: [2024], engines: {
+        2024: ["3.0L I6 Turbo PHEV 489hp (B58X30O1)"],
+      }},
+      "M5": { years: [2018,2019,2020,2021,2022,2023,2024], engines: {
+        2018:["4.4L V8 Twin-Turbo 600hp (S63B44T4)"],2019:["4.4L V8 Twin-Turbo 600hp (S63B44T4)"],
+        2020:["4.4L V8 Twin-Turbo 600hp (S63B44T4)"],2021:["4.4L V8 Twin-Turbo 617hp Competition (S63B44T4)"],
+        2022:["4.4L V8 Twin-Turbo 617hp Competition (S63B44T4)"],2023:["4.4L V8 Twin-Turbo 617hp Competition (S63B44T4)"],
+        2024:["4.4L V8 Twin-Turbo PHEV 717hp (S68B44O0)"],
+      }},
+    }
+  },
+  "7 Series": {
+    models: {
+      "740i": { years: [2020,2021,2022,2023,2024], engines: {
+        2020:["3.0L I6 Turbo 335hp (B58B30M1)"],2021:["3.0L I6 Turbo 335hp (B58B30M1)"],
+        2022:["3.0L I6 Turbo 335hp (B58B30M1)"],2023:["3.0L I6 Turbo 375hp (B58B30O1)"],
+        2024:["3.0L I6 Turbo 375hp (B58B30O1)"],
+      }},
+      "750e xDrive": { years: [2023,2024], engines: {
+        2023:["3.0L I6 Turbo PHEV 490hp (B58X30O1)"],2024:["3.0L I6 Turbo PHEV 490hp (B58X30O1)"],
+      }},
+      "760i xDrive": { years: [2023,2024], engines: {
+        2023:["4.4L V8 Twin-Turbo 544hp (N63B44TU3)"],2024:["4.4L V8 Twin-Turbo 544hp (N63B44TU3)"],
+      }},
+      "M760e xDrive": { years: [2023,2024], engines: {
+        2023:["4.4L V8 Twin-Turbo PHEV 571hp"],2024:["4.4L V8 Twin-Turbo PHEV 571hp"],
+      }},
+    }
+  },
+  "X1": {
+    models: {
+      "xDrive18d": { years: [2022,2023,2024], engines: {
+        2022:["2.0L 4-Cyl Diesel 150hp (B47D20)"],2023:["2.0L 4-Cyl Diesel 150hp (B47D20)"],2024:["2.0L 4-Cyl Diesel 150hp (B47D20)"],
+      }},
+      "sDrive18i": { years: [2022,2023,2024], engines: {
+        2022:["1.5L 3-Cyl Turbo 136hp (B38B15)"],2023:["1.5L 3-Cyl Turbo 136hp (B38B15)"],2024:["1.5L 3-Cyl Turbo 136hp (B38B15)"],
+      }},
+      "xDrive23i": { years: [2022,2023,2024], engines: {
+        2022:["2.0L 4-Cyl Turbo 218hp (B48B20)"],2023:["2.0L 4-Cyl Turbo 218hp (B48B20)"],2024:["2.0L 4-Cyl Turbo 218hp (B48B20)"],
+      }},
+      "xDrive30e": { years: [2023,2024], engines: {
+        2023:["1.5L 3-Cyl Turbo PHEV 326hp (B38X15)"],2024:["1.5L 3-Cyl Turbo PHEV 326hp (B38X15)"],
+      }},
+    }
+  },
+  "X3": {
+    models: {
+      "sDrive20i": { years: [2018,2019,2020,2021,2022,2023,2024], engines: {
+        2018:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2019:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2020:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2021:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2022:["2.0L 4-Cyl Turbo 184hp (B48B20)"],2023:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+        2024:["2.0L 4-Cyl Turbo 184hp (B48B20)"],
+      }},
+      "xDrive30i": { years: [2018,2019,2020,2021,2022,2023,2024], engines: {
+        2018:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2019:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2020:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2021:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2022:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],2023:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+        2024:["2.0L 4-Cyl Turbo 252hp (B48B20B)"],
+      }},
+      "xDrive30e": { years: [2020,2021,2022,2023,2024], engines: {
+        2020:["2.0L 4-Cyl PHEV 292hp (B48X20B)"],2021:["2.0L 4-Cyl PHEV 292hp (B48X20B)"],
+        2022:["2.0L 4-Cyl PHEV 292hp (B48X20B)"],2023:["2.0L 4-Cyl PHEV 292hp (B48X20B)"],
+        2024:["2.0L 4-Cyl PHEV 292hp (B48X20B)"],
+      }},
+      "M40i": { years: [2018,2019,2020,2021,2022,2023,2024], engines: {
+        2018:["3.0L I6 Turbo 360hp (B58B30M0)"],2019:["3.0L I6 Turbo 360hp (B58B30M0)"],
+        2020:["3.0L I6 Turbo 382hp (B58B30M1)"],2021:["3.0L I6 Turbo 382hp (B58B30M1)"],
+        2022:["3.0L I6 Turbo 382hp (B58B30M1)"],2023:["3.0L I6 Turbo 382hp (B58B30M1)"],
+        2024:["3.0L I6 Turbo 382hp (B58B30M1)"],
+      }},
+      "M Competition": { years: [2020,2021,2022,2023,2024], engines: {
+        2020:["3.0L I6 Twin-Turbo 503hp (S58B30T0)"],2021:["3.0L I6 Twin-Turbo 503hp (S58B30T0)"],
+        2022:["3.0L I6 Twin-Turbo 503hp (S58B30T0)"],2023:["3.0L I6 Twin-Turbo 510hp (S58B30T0)"],
+        2024:["3.0L I6 Twin-Turbo 510hp (S58B30T0)"],
+      }},
+    }
+  },
+  "X5": {
+    models: {
+      "xDrive40i": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019:["3.0L I6 Turbo 340hp (B58B30M1)"],2020:["3.0L I6 Turbo 335hp (B58B30M1)"],
+        2021:["3.0L I6 Turbo 335hp (B58B30M1)"],2022:["3.0L I6 Turbo 335hp (B58B30M1)"],
+        2023:["3.0L I6 Turbo 375hp (B58B30O1)"],2024:["3.0L I6 Turbo 375hp (B58B30O1)"],
+      }},
+      "xDrive45e": { years: [2019,2020,2021,2022,2023,2024], engines: {
+        2019:["3.0L I6 PHEV 394hp (B58X30M1)"],2020:["3.0L I6 PHEV 394hp (B58X30M1)"],
+        2021:["3.0L I6 PHEV 394hp (B58X30M1)"],2022:["3.0L I6 PHEV 394hp (B58X30M1)"],
+        2023:["3.0L I6 PHEV 483hp (B58X30O1)"],2024:["3.0L I6 PHEV 483hp (B58X30O1)"],
+      }},
+      "M50i": { years: [2019,2020,2021,2022], engines: {
+        2019:["4.4L V8 Twin-Turbo 456hp (N63B44TU3)"],2020:["4.4L V8 Twin-Turbo 456hp (N63B44TU3)"],
+        2021:["4.4L V8 Twin-Turbo 456hp (N63B44TU3)"],2022:["4.4L V8 Twin-Turbo 456hp (N63B44TU3)"],
+      }},
+      "M Competition": { years: [2020,2021,2022,2023,2024], engines: {
+        2020:["4.4L V8 Twin-Turbo 617hp (S63B44T4)"],2021:["4.4L V8 Twin-Turbo 617hp (S63B44T4)"],
+        2022:["4.4L V8 Twin-Turbo 617hp (S63B44T4)"],2023:["4.4L V8 Twin-Turbo 617hp (S63B44T4)"],
+        2024:["4.4L V8 Twin-Turbo 617hp (S63B44T4)"],
+      }},
+    }
+  },
+};
+
+// =============================================
+//  STATE
+// =============================================
+let state = { series: null, model: null, year: null, engine: null };
+
+// =============================================
+//  INIT
+// =============================================
+function init() {
+  renderSeries();
+}
+
+// =============================================
+//  RENDER SERIES
+// =============================================
+function renderSeries() {
+  const grid = document.getElementById('seriesGrid');
+  grid.innerHTML = '';
+  Object.keys(BMW_DATA).forEach(series => {
+    const card = makeCard(series, getSeriesSub(series));
+    card.onclick = () => selectSeries(series);
+    grid.appendChild(card);
+  });
+}
+
+function getSeriesSub(series) {
+  const count = Object.keys(BMW_DATA[series].models).length;
+  return `${count} models available`;
+}
+
+// =============================================
+//  SELECT SERIES
+// =============================================
+function selectSeries(series) {
+  state = { series, model: null, year: null, engine: null };
+  highlightCard('seriesGrid', series);
+  showDisplay('seriesDisplay', series);
+  markDone('step1');
+  setActive('step2');
+  updateProgress(1);
+  renderModels(series);
+  openPanel('panelModel');
+  resetPanel('panelYear');
+  resetPanel('panelEngine');
+  hideSummary();
+}
+
+// =============================================
+//  RENDER MODELS
+// =============================================
+function renderModels(series) {
+  const grid = document.getElementById('modelGrid');
+  grid.innerHTML = '';
+  const models = BMW_DATA[series].models;
+  Object.keys(models).forEach(model => {
+    const years = models[model].years;
+    const sub = `${Math.min(...years)} – ${Math.max(...years)}`;
+    const card = makeCard(model, sub);
+    card.onclick = () => selectModel(model);
+    grid.appendChild(card);
+  });
+}
+
+function selectModel(model) {
+  state.model = model; state.year = null; state.engine = null;
+  highlightCard('modelGrid', model);
+  showDisplay('modelDisplay', model);
+  markDone('step2');
+  setActive('step3');
+  updateProgress(2);
+  renderYears(state.series, model);
+  openPanel('panelYear');
+  resetPanel('panelEngine');
+  hideSummary();
+}
+
+// =============================================
+//  RENDER YEARS
+// =============================================
+function renderYears(series, model) {
+  const grid = document.getElementById('yearGrid');
+  grid.innerHTML = '';
+  const years = BMW_DATA[series].models[model].years;
+  [...years].sort((a,b) => b - a).forEach(year => {
+    const card = makeCard(String(year), '');
+    card.onclick = () => selectYear(year);
+    grid.appendChild(card);
+  });
+}
+
+function selectYear(year) {
+  state.year = year; state.engine = null;
+  highlightCard('yearGrid', String(year));
+  showDisplay('yearDisplay', String(year));
+  markDone('step3');
+  setActive('step4');
+  updateProgress(3);
+  renderEngines(state.series, state.model, year);
+  openPanel('panelEngine');
+  hideSummary();
+}
+
+// =============================================
+//  RENDER ENGINES
+// =============================================
+function renderEngines(series, model, year) {
+  const grid = document.getElementById('engineGrid');
+  grid.innerHTML = '';
+  const engines = BMW_DATA[series].models[model].engines[year] || [];
+  engines.forEach(engine => {
+    const parts = engine.split(' (');
+    const main = parts[0];
+    const code = parts[1] ? parts[1].replace(')','') : '';
+    const card = makeCard(main, code ? `Code: ${code}` : '');
+    card.onclick = () => selectEngine(engine);
+    grid.appendChild(card);
+  });
+}
+
+function selectEngine(engine) {
+  state.engine = engine;
+  highlightCard('engineGrid', engine.split(' (')[0]);
+  showDisplay('engineDisplay', engine.split(' (')[0]);
+  markDone('step4');
+  updateProgress(4);
+  showSummary();
+}
+
+// =============================================
+//  SUMMARY
+// =============================================
+function showSummary() {
+  document.getElementById('sf-series').textContent = state.series;
+  document.getElementById('sf-model').textContent = state.model;
+  document.getElementById('sf-year').textContent = state.year;
+  document.getElementById('sf-engine').textContent = state.engine.split(' (')[0];
+  document.getElementById('summaryVehicle').textContent = `${state.year} BMW ${state.model}`;
+  document.getElementById('summaryEngineLine').textContent = `⬡ ENGINE: ${state.engine}`;
+  document.getElementById('summaryWatermark').textContent = state.series;
+  const card = document.getElementById('summaryCard');
+  card.classList.add('shown');
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideSummary() {
+  document.getElementById('summaryCard').classList.remove('shown');
+}
+
+// =============================================
+//  HELPERS
+// =============================================
+function makeCard(main, sub) {
+  const div = document.createElement('div');
+  div.className = 'option-card';
+  div.dataset.value = main;
+  div.innerHTML = `
+    <div class="check-icon">✓</div>
+    <div class="option-main">${main}</div>
+    ${sub ? `<div class="option-sub">${sub}</div>` : ''}
+  `;
+  return div;
+}
+
+function highlightCard(gridId, value) {
+  const grid = document.getElementById(gridId);
+  grid.querySelectorAll('.option-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.value === value);
+  });
+}
+
+function showDisplay(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.classList.add('shown');
+}
+
+function openPanel(id) {
+  const panel = document.getElementById(id);
+  panel.classList.add('visible', 'active');
+  panel.classList.remove('locked');
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function resetPanel(id) {
+  const panel = document.getElementById(id);
+  panel.classList.remove('visible', 'active');
+}
+
+function markDone(stepId) {
+  const node = document.getElementById(stepId);
+  node.classList.remove('active');
+  node.classList.add('done');
+}
+
+function setActive(stepId) {
+  const node = document.getElementById(stepId);
+  node.classList.add('active');
+  node.classList.remove('done');
+}
+
+function updateProgress(step) {
+  const pct = [0, 0, 33.3, 66.6, 100];
+  document.getElementById('progressFill').style.width = pct[step] + '%';
+}
+
+function loadRepairData() {
+  sessionStorage.setItem('btp_vehicle', JSON.stringify({
+    year: state.year,
+    model: state.model,
+    engine: state.engine,
+    series: state.series
+  }));
+  window.location.href = 'dashboard.html';
+}
+
+function resetAll() {
+  state = { series: null, model: null, year: null, engine: null };
+  ['step1','step2','step3','step4'].forEach(id => {
+    const node = document.getElementById(id);
+    node.classList.remove('done','active');
+  });
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('progressFill').style.width = '0%';
+  ['seriesDisplay','modelDisplay','yearDisplay','engineDisplay'].forEach(id => {
+    document.getElementById(id).classList.remove('shown');
+  });
+  document.getElementById('panelSeries').classList.add('active');
+  ['panelModel','panelYear','panelEngine'].forEach(id => resetPanel(id));
+  hideSummary();
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+}
+
+// =============================================
+//  START
+// =============================================
+init();
+</script>
+
+</body>
+</html>
